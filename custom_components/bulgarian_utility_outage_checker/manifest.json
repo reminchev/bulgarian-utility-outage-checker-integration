@@ -1,0 +1,12 @@
+{
+  "domain": "bulgarian_utility_outage_checker",
+  "name": "Bulgarian Utility Outage Checker",
+  "codeowners": ["@reminchev"],
+  "config_flow": true,
+  "documentation": "https://github.com/reminchev/bulgarian-utility-outage-checker-integration",
+  "integration_type": "device",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/reminchev/bulgarian-utility-outage-checker-integration/issues",
+  "requirements": ["beautifulsoup4==4.12.3", "lxml==5.1.0"],
+  "version": "1.0.0"
+}

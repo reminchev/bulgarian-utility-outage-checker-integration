@@ -1,0 +1,33 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Bulgarian Utility Outage Checker",
+        "description": "Configure the Bulgarian Utility Outage Checker integration",
+        "data": {
+          "identifier": "Identifier (subscriber number, location, or street)",
+          "check_interval": "Check interval (minutes)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect to ERM West website",
+      "invalid_auth": "Invalid identifier",
+      "unknown": "Unexpected error occurred"
+    },
+    "abort": {
+      "already_configured": "This identifier is already configured"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Options for Bulgarian Utility Outage Checker",
+        "description": "Update the configuration",
+        "data": {
+          "check_interval": "Check interval (minutes)"
+        }
+      }
+    }
+  }
+}

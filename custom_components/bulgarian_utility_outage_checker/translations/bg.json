@@ -1,0 +1,33 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Bulgarian Utility Outage Checker",
+        "description": "Конфигуриране на интеграцията за проверка на аварии",
+        "data": {
+          "identifier": "Идентификатор (номер на абонат, населено място или улица)",
+          "check_interval": "Интервал на проверка (минути)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Неуспешна връзка със сайта на ЕРМ Запад",
+      "invalid_auth": "Невалиден идентификатор",
+      "unknown": "Възникна неочаквана грешка"
+    },
+    "abort": {
+      "already_configured": "Този идентификатор вече е конфигуриран"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Опции за Bulgarian Utility Outage Checker",
+        "description": "Актуализиране на конфигурацията",
+        "data": {
+          "check_interval": "Интервал на проверка (минути)"
+        }
+      }
+    }
+  }
+}
