@@ -4,8 +4,15 @@ from datetime import timedelta
 DOMAIN = "bulgarian_utility_outage_checker"
 
 # Configuration
+CONF_PROVIDER = "provider"
 CONF_IDENTIFIER = "identifier"
 CONF_CHECK_INTERVAL = "check_interval"
+
+# Providers
+PROVIDER_ENERGOHOLD = "energohold"
+PROVIDERS = {
+    PROVIDER_ENERGOHOLD: "Енергохолд (ЕРМ Запад)",
+}
 
 # Defaults
 DEFAULT_CHECK_INTERVAL = 60  # minutes

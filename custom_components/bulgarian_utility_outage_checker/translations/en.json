@@ -3,7 +3,14 @@
     "step": {
       "user": {
         "title": "Bulgarian Utility Outage Checker",
-        "description": "Configure the Bulgarian Utility Outage Checker integration",
+        "description": "Select your utility provider",
+        "data": {
+          "provider": "Provider"
+        }
+      },
+      "identifier": {
+        "title": "Configure Identifier",
+        "description": "Enter identifier for outage checking",
         "data": {
           "identifier": "Identifier (subscriber number, location, or street)",
           "check_interval": "Check interval (minutes)"
