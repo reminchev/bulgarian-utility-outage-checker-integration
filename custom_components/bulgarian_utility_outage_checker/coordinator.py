@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 import logging
 
 import aiohttp
+import async_timeout
 from bs4 import BeautifulSoup
 
 from homeassistant.config_entries import ConfigEntry
@@ -53,7 +54,7 @@ class BulgarianUtilityOutageCoordinator(DataUpdateCoordinator):
     async def _async_update_data(self) -> dict:
         """Fetch data from ERM West website."""
         try:
-            async with asyncio.timeout(30):
+            async with async_timeout.timeout(30):
                 return await self._fetch_outage_data()
         except asyncio.TimeoutError as err:
             raise UpdateFailed(f"Timeout communicating with ERM West: {err}") from err
