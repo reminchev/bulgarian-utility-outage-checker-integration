@@ -7,7 +7,7 @@ from typing import Any
 import voluptuous as vol
 
 from homeassistant import config_entries
-from homeassistant.core import HomeAssistant, callback
+from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers import config_validation as cv
 
@@ -16,7 +16,6 @@ from .const import (
     CONF_IDENTIFIER,
     CONF_PROVIDER,
     DEFAULT_CHECK_INTERVAL,
-    DEFAULT_NAME,
     DOMAIN,
     PROVIDER_ENERGOHOLD,
     PROVIDERS,
@@ -40,14 +39,15 @@ STEP_IDENTIFIER_DATA_SCHEMA = vol.Schema(
 )
 
 
-class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
+class ConfigFlow(config_entries.ConfigFlow):
     """Handle a config flow for Bulgarian Utility Outage Checker."""
 
     VERSION = 1
+    DOMAIN = DOMAIN
 
     def __init__(self) -> None:
         """Initialize the config flow."""
-        self._provider: str | None = None
+        self._provider: str = PROVIDER_ENERGOHOLD
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
@@ -85,7 +85,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             )
             self._abort_if_unique_id_configured()
 
-            provider_name = PROVIDERS.get(self._provider, self._provider)
+            provider_name = PROVIDERS[self._provider]
             return self.async_create_entry(
                 title=f"{provider_name} - {identifier}",
                 data=full_data,

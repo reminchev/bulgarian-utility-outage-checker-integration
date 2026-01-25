@@ -22,7 +22,6 @@ from .const import (
     OUTAGE_TYPE_NONE,
     OUTAGE_TYPE_PLANNED,
     OUTAGE_TYPE_UNPLANNED,
-    OUTAGE_TYPE_UNKNOWN,
 )
 
 _LOGGER = logging.getLogger(__name__)

@@ -10,6 +10,7 @@ from homeassistant.components.binary_sensor import (
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
@@ -62,13 +63,12 @@ class UtilityOutageBinarySensor(
         self._attr_name = "Outage Detected"
         
         # Device info for grouping entities
-        self._attr_device_info = {
-            "identifiers": {(DOMAIN, entry.entry_id)},
-            "name": f"Bulgarian Utility Outage Checker - {self._identifier}",
-            "manufacturer": "ERM West",
-            "model": "Outage Checker",
-            "entry_type": "service",
-        }
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, entry.entry_id)},
+            name=f"Bulgarian Utility Outage Checker - {self._identifier}",
+            manufacturer="ERM West",
+            model="Outage Checker",
+        )
 
     @property
     def is_on(self) -> bool:
