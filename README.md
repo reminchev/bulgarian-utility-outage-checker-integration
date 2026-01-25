@@ -67,6 +67,28 @@ The integration automatically creates:
 
 ## Dashboard Cards / Карти за таблото
 
+### Цветна карта с бутон за проверка (Препоръчително!)
+
+```yaml
+type: vertical-stack
+cards:
+  - type: entity
+    entity: binary_sensor.bulgarian_utility_outage_checker_xxx_outage
+    name: Статус на електрозахранването
+    icon: mdi:transmission-tower
+    state_color: true
+  - type: button
+    name: Провери сега
+    icon: mdi:refresh
+    tap_action:
+      action: call-service
+      service: bulgarian_utility_outage_checker.check_now
+      service_data:
+        entity_id: binary_sensor.bulgarian_utility_outage_checker_xxx_outage
+    hold_action:
+      action: none
+```
+
 ### Simple Card / Проста карта
 
 ```yaml
@@ -96,6 +118,14 @@ entities:
     entity: binary_sensor.bulgarian_utility_outage_checker_xxx_outage
     attribute: last_check
     name: Последна проверка
+  - type: button
+    name: Провери сега
+    icon: mdi:refresh
+    tap_action:
+      action: call-service
+      service: bulgarian_utility_outage_checker.check_now
+      service_data:
+        entity_id: binary_sensor.bulgarian_utility_outage_checker_xxx_outage
 ```
 
 ### Conditional Alert Card / Карта за предупреждения

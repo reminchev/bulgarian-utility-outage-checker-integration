@@ -5,7 +5,9 @@ import logging
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, ServiceCall
+from homeassistant.helpers import config_validation as cv
+import voluptuous as vol
 
 from .const import DOMAIN
 from .coordinator import BulgarianUtilityOutageCoordinator
@@ -13,6 +15,14 @@ from .coordinator import BulgarianUtilityOutageCoordinator
 _LOGGER = logging.getLogger(__name__)
 
 PLATFORMS: list[Platform] = [Platform.SENSOR, Platform.BINARY_SENSOR]
+
+SERVICE_CHECK_NOW = "check_now"
+
+SERVICE_CHECK_NOW_SCHEMA = vol.Schema(
+    {
+        vol.Required("entity_id"): cv.entity_ids,
+    }
+)
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -28,6 +38,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     # Register update listener for options changes
     entry.async_on_unload(entry.add_update_listener(update_listener))
+
+    async def async_check_now(call: ServiceCall) -> None:  # noqa: ARG001
+        """Handle the check_now service call."""
+        await coordinator.async_request_refresh()
+
+    # Register service
+    hass.services.async_register(
+        DOMAIN,
+        SERVICE_CHECK_NOW,
+        async_check_now,
+        schema=SERVICE_CHECK_NOW_SCHEMA,
+    )
 
     return True
 

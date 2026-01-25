@@ -1,0 +1,12 @@
+check_now:
+  name: Провери сега
+  description: Извършва незабавна проверка за аварии
+  fields:
+    entity_id:
+      name: Entity
+      description: Entity ID на сензора за проверка
+      required: true
+      selector:
+        entity:
+          domain: binary_sensor
+          integration: bulgarian_utility_outage_checker

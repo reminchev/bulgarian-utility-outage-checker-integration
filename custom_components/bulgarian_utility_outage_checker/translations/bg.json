@@ -36,5 +36,28 @@
         }
       }
     }
+  },
+  "services": {
+    "check_now": {
+      "name": "Провери сега",
+      "description": "Извършва незабавна проверка за аварии",
+      "fields": {
+        "entity_id": {
+          "name": "Ентити",
+          "description": "Entity ID на сензора за проверка"
+        }
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "status": {
+        "name": "Статус",
+        "state": {
+          "on": "Има авария",
+          "off": "ОК"
+        }
+      }
+    }
   }
 }

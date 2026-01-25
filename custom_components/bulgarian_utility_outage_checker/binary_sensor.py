@@ -60,7 +60,7 @@ class UtilityOutageBinarySensor(
         super().__init__(coordinator)
         self._identifier = entry.data[CONF_IDENTIFIER]
         self._attr_unique_id = f"{entry.entry_id}_outage"
-        self._attr_name = "Outage Detected"
+        self._attr_name = "Статус"
         
         # Device info for grouping entities
         self._attr_device_info = DeviceInfo(
@@ -78,11 +78,18 @@ class UtilityOutageBinarySensor(
         return False
 
     @property
+    def state(self) -> str:
+        """Return the state of the binary sensor."""
+        if self.is_on:
+            return "Има авария"
+        return "ОК"
+
+    @property
     def icon(self) -> str:
         """Return the icon to use in the frontend."""
         if self.is_on:
-            return "mdi:power-plug-off"
-        return "mdi:power-plug"
+            return "mdi:alert-circle"
+        return "mdi:check-circle"
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
