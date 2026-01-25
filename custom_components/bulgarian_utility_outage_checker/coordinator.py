@@ -90,59 +90,68 @@ class BulgarianUtilityOutageCoordinator(DataUpdateCoordinator):
         """Parse HTML response."""
         soup = BeautifulSoup(html, "lxml")
         
+        # По подразбиране предполагаме, че има проблем
         result = {
             "identifier": self.identifier,
             "timestamp": datetime.now().isoformat(),
-            "has_outage": False,
-            "outage_type": OUTAGE_TYPE_NONE,
+            "has_outage": True,
+            "outage_type": OUTAGE_TYPE_UNPLANNED,
             "details": [],
             "last_check": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         }
 
-        # Check for unplanned outages (red markers)
-        red_markers = soup.find_all(
-            string=lambda text: text and "Непланирани прекъсвания" in text
-        )
-        if red_markers:
-            result["has_outage"] = True
-            result["outage_type"] = OUTAGE_TYPE_UNPLANNED
-
-        # Check for planned outages (green markers)
-        green_markers = soup.find_all(
-            string=lambda text: text and "Планирани прекъсвания" in text
-        )
-        if green_markers:
-            result["has_outage"] = True
-            if result["outage_type"] != OUTAGE_TYPE_NONE:
-                result["outage_type"] = OUTAGE_TYPE_BOTH
-            else:
-                result["outage_type"] = OUTAGE_TYPE_PLANNED
-
-        # Extract outage details
-        tables = soup.find_all("table")
-        for table in tables:
-            rows = table.find_all("tr")
-            for row in rows:
-                cells = row.find_all(["td", "th"])
-                if len(cells) > 0:
-                    row_text = " ".join([cell.get_text(strip=True) for cell in cells])
-                    if row_text and self.identifier.lower() in row_text.lower():
-                        result["details"].append(row_text)
-
-        # Check for "no results" message
-        if not result["details"]:
-            no_results = soup.find_all(
-                string=lambda text: text and ("Няма" in text or "няма" in text)
+        # Проверка за съобщение "няма регистрирано прекъсване"
+        no_outage_messages = soup.find_all(
+            string=lambda text: text and (
+                "няма регистрирано" in text.lower() or
+                "няма планирано" in text.lower() or
+                "няма непланирано" in text.lower() or
+                "не са регистрирани" in text.lower()
             )
-            if no_results:
-                result["has_outage"] = False
-                result["outage_type"] = OUTAGE_TYPE_NONE
+        )
+        
+        if no_outage_messages:
+            # Ако има съобщение "няма регистрирано", значи всичко е ОК
+            result["has_outage"] = False
+            result["outage_type"] = OUTAGE_TYPE_NONE
+        else:
+            # Ако няма такова съобщение, има авария
+            # Определяме типа на аварията
+            
+            # Проверка за непланирани аварии
+            unplanned_markers = soup.find_all(
+                string=lambda text: text and "непланиран" in text.lower()
+            )
+            
+            # Проверка за планирани аварии
+            planned_markers = soup.find_all(
+                string=lambda text: text and "планиран" in text.lower() and "непланиран" not in text.lower()
+            )
+            
+            if unplanned_markers and planned_markers:
+                result["outage_type"] = OUTAGE_TYPE_BOTH
+            elif planned_markers:
+                result["outage_type"] = OUTAGE_TYPE_PLANNED
+            else:
+                result["outage_type"] = OUTAGE_TYPE_UNPLANNED
+            
+            # Извличане на детайли за аварията
+            tables = soup.find_all("table")
+            for table in tables:
+                rows = table.find_all("tr")
+                for row in rows:
+                    cells = row.find_all(["td", "th"])
+                    if len(cells) > 0:
+                        row_text = " ".join([cell.get_text(strip=True) for cell in cells])
+                        if row_text and len(row_text) > 5:  # Игнорираме празни редове
+                            result["details"].append(row_text)
 
         _LOGGER.debug(
-            "Fetched data for %s: has_outage=%s, type=%s",
+            "Fetched data for %s: has_outage=%s, type=%s, no_outage_msg=%s",
             self.identifier,
             result["has_outage"],
             result["outage_type"],
+            len(no_outage_messages) > 0,
         )
 
         return result
