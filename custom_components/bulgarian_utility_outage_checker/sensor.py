@@ -38,6 +38,7 @@ async def async_setup_entry(
     async_add_entities(
         [
             UtilityOutageStatusSensor(coordinator, entry),
+            LastCheckSensor(coordinator, entry),
         ],
         True,
     )
@@ -92,6 +93,57 @@ class UtilityOutageStatusSensor(
             ATTR_DETAILS: self.coordinator.data.get("details", []),
             ATTR_LAST_CHECK: self.coordinator.data.get("last_check"),
             ATTR_TIMESTAMP: self.coordinator.data.get("timestamp"),
+        }
+
+    @property
+    def available(self) -> bool:
+        """Return True if entity is available."""
+        return self.coordinator.last_update_success
+
+
+class LastCheckSensor(
+    CoordinatorEntity[BulgarianUtilityOutageCoordinator], SensorEntity
+):
+    """Sensor for last check timestamp."""
+
+    _attr_has_entity_name = True
+    _attr_icon = "mdi:clock-check"
+
+    def __init__(
+        self,
+        coordinator: BulgarianUtilityOutageCoordinator,
+        entry: ConfigEntry,
+    ) -> None:
+        """Initialize the sensor."""
+        super().__init__(coordinator)
+        self._identifier = entry.data[CONF_IDENTIFIER]
+        self._attr_unique_id = f"{entry.entry_id}_last_check"
+        self._attr_name = "Последна проверка"
+        
+        # Device info for grouping entities
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, entry.entry_id)},
+            name=f"Bulgarian Utility Outage Checker - {self._identifier}",
+            manufacturer="ERM West",
+            model="Outage Checker",
+        )
+
+    @property
+    def native_value(self) -> str:
+        """Return the state of the sensor."""
+        if self.coordinator.data:
+            return self.coordinator.data.get("last_check", "Unknown")
+        return "Unknown"
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        """Return the state attributes."""
+        if not self.coordinator.data:
+            return {}
+
+        return {
+            "update_interval_minutes": self.coordinator.check_interval,
+            "timestamp": self.coordinator.data.get("timestamp"),
         }
 
     @property

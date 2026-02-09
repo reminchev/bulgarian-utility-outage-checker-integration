@@ -34,6 +34,7 @@ class BulgarianUtilityOutageCoordinator(DataUpdateCoordinator):
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry) -> None:
         """Initialize."""
         self.identifier = entry.data[CONF_IDENTIFIER]
+        self.entry = entry
         
         # Get check interval from options or data
         check_interval = entry.options.get(
@@ -41,23 +42,48 @@ class BulgarianUtilityOutageCoordinator(DataUpdateCoordinator):
             entry.data.get(CONF_CHECK_INTERVAL, DEFAULT_CHECK_INTERVAL)
         )
         
+        self._check_interval = check_interval
         update_interval = timedelta(minutes=check_interval)
+        
+        _LOGGER.info(
+            "Initializing coordinator for %s with update interval of %d minutes",
+            self.identifier,
+            check_interval,
+        )
 
         super().__init__(
             hass,
             _LOGGER,
-            name=DOMAIN,
+            name=f"{DOMAIN}_{self.identifier}",
             update_interval=update_interval,
         )
+    
+    @property
+    def check_interval(self) -> int:
+        """Return the check interval in minutes."""
+        return self._check_interval
 
     async def _async_update_data(self) -> dict:
         """Fetch data from ERM West website."""
+        _LOGGER.debug(
+            "Starting data update for %s (interval: %d min)",
+            self.identifier,
+            self._check_interval,
+        )
         try:
             async with async_timeout.timeout(30):
-                return await self._fetch_outage_data()
+                data = await self._fetch_outage_data()
+                _LOGGER.info(
+                    "Successfully updated data for %s: has_outage=%s",
+                    self.identifier,
+                    data.get("has_outage", "unknown"),
+                )
+                return data
         except asyncio.TimeoutError as err:
+            _LOGGER.error("Timeout communicating with ERM West for %s: %s", self.identifier, err)
             raise UpdateFailed(f"Timeout communicating with ERM West: {err}") from err
         except Exception as err:
+            _LOGGER.error("Error communicating with ERM West for %s: %s", self.identifier, err)
             raise UpdateFailed(f"Error communicating with ERM West: {err}") from err
 
     async def _fetch_outage_data(self) -> dict:

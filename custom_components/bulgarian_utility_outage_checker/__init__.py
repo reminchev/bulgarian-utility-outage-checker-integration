@@ -30,7 +30,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data.setdefault(DOMAIN, {})
 
     coordinator = BulgarianUtilityOutageCoordinator(hass, entry)
+    
+    # Perform first refresh
+    _LOGGER.info("Performing first refresh for %s", entry.data.get("identifier"))
     await coordinator.async_config_entry_first_refresh()
+    _LOGGER.info(
+        "First refresh complete for %s. Next update in %d minutes",
+        entry.data.get("identifier"),
+        coordinator.check_interval,
+    )
 
     hass.data[DOMAIN][entry.entry_id] = coordinator
 
@@ -64,4 +72,8 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 async def update_listener(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Handle options update."""
+    _LOGGER.info(
+        "Options updated for %s, reloading entry to apply new settings",
+        entry.data.get("identifier"),
+    )
     await hass.config_entries.async_reload(entry.entry_id)
