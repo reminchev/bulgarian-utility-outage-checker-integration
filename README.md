@@ -17,7 +17,8 @@ _Home Assistant custom integration for checking planned and unplanned utility ou
 
 - 🔌 **Device Integration** - Creates a device with sensors / Създава устройство със сензори
 - 🎨 **UI Configuration** - No YAML needed! / Без нужда от YAML конфигурация
-- 📊 **Two Sensors** - Status sensor and binary sensor / Статус сензор и binary sensor
+- 📊 **Three Sensors** - Status, last check and next check sensors / Три сензора (статус, последна и следваща проверка)
+- 🎴 **Custom Lovelace Card** - Beautiful card with instant check button / Красива карта с бутон за проверка
 - ⏱️ **Configurable interval** - From 1 minute to 24 hours / Конфигурируем интервал
 - 🔍 **Custom identifiers** - Subscriber number, location, or street / Поддръжка на идентификатори
 - 🌐 **Bilingual** - Bulgarian and English / Двуезичен интерфейс (БГ/EN)
@@ -63,11 +64,36 @@ _Home Assistant custom integration for checking planned and unplanned utility ou
 The integration automatically creates:
 - **Device**: `Bulgarian Utility Outage Checker - {your_identifier}`
 - **Sensor**: `sensor.bulgarian_utility_outage_checker_{id}_status` - Shows current status
+- **Sensor**: `sensor.bulgarian_utility_outage_checker_{id}_последна_проверка` - Shows last check time
+- **Sensor**: `sensor.bulgarian_utility_outage_checker_{id}_следваща_проверка` - Shows next check time  
 - **Binary Sensor**: `binary_sensor.bulgarian_utility_outage_checker_{id}_outage` - ON when outage detected
 
 ## Dashboard Cards / Карти за таблото
 
-### Цветна карта с бутон за проверка (Препоръчително!)
+### 🎴 Custom Lovelace Card (Препоръчително! / Recommended!)
+
+Интеграцията включва красива custom карта с автоматична визуализация! / The integration includes a beautiful custom card with automatic visualization!
+
+**[📖 Пълна документация / Full documentation →](LOVELACE_CARD.md)**
+
+```yaml
+type: custom:bulgarian-utility-outage-card
+entity: binary_sensor.bulgarian_utility_outage_checker_xxx_outage
+title: Проверка за Аварии  # По избор / Optional
+```
+
+**Функции / Features:**
+- 🎨 Автоматични цветове според статуса / Automatic colors based on status
+- 🔘 Бутон за мигновенна проверка / Instant check button
+- ⏰ Показва последна и следваща проверка / Shows last and next check time
+- 📝 Детайли за аварията / Outage details
+- 📱 Работи на мобилни устройства / Works on mobile devices
+
+---
+
+### Алтернативни карти / Alternative Cards
+
+### Цветна карта с бутон за проверка
 
 ```yaml
 type: vertical-stack

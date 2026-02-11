@@ -39,6 +39,7 @@ async def async_setup_entry(
         [
             UtilityOutageStatusSensor(coordinator, entry),
             LastCheckSensor(coordinator, entry),
+            NextCheckSensor(coordinator, entry),
         ],
         True,
     )
@@ -144,6 +145,58 @@ class LastCheckSensor(
         return {
             "update_interval_minutes": self.coordinator.check_interval,
             "timestamp": self.coordinator.data.get("timestamp"),
+        }
+
+    @property
+    def available(self) -> bool:
+        """Return True if entity is available."""
+        return self.coordinator.last_update_success
+
+
+class NextCheckSensor(
+    CoordinatorEntity[BulgarianUtilityOutageCoordinator], SensorEntity
+):
+    """Sensor for next check timestamp."""
+
+    _attr_has_entity_name = True
+    _attr_icon = "mdi:clock-alert"
+    _attr_device_class = "timestamp"
+
+    def __init__(
+        self,
+        coordinator: BulgarianUtilityOutageCoordinator,
+        entry: ConfigEntry,
+    ) -> None:
+        """Initialize the sensor."""
+        super().__init__(coordinator)
+        self._identifier = entry.data[CONF_IDENTIFIER]
+        self._attr_unique_id = f"{entry.entry_id}_next_check"
+        self._attr_name = "Следваща проверка"
+        
+        # Device info for grouping entities
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, entry.entry_id)},
+            name=f"Bulgarian Utility Outage Checker - {self._identifier}",
+            manufacturer="ERM West",
+            model="Outage Checker",
+        )
+
+    @property
+    def native_value(self) -> str | None:
+        """Return the state of the sensor."""
+        if self.coordinator.last_update_success_time:
+            from datetime import timedelta
+            next_update = self.coordinator.last_update_success_time + timedelta(
+                minutes=self.coordinator.check_interval
+            )
+            return next_update.isoformat()
+        return None
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        """Return the state attributes."""
+        return {
+            "update_interval_minutes": self.coordinator.check_interval,
         }
 
     @property

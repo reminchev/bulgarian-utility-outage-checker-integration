@@ -29,6 +29,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Bulgarian Utility Outage Checker from a config entry."""
     hass.data.setdefault(DOMAIN, {})
 
+    # Register www folder for static files (Lovelace card)
+    hass.http.register_static_path(
+        f"/local/community/{DOMAIN}",
+        hass.config.path(f"custom_components/{DOMAIN}/www"),
+        cache_headers=False,
+    )
+
     coordinator = BulgarianUtilityOutageCoordinator(hass, entry)
     
     # Perform first refresh

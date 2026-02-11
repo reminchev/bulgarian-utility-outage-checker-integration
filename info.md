@@ -17,8 +17,11 @@ Check for planned and unplanned utility outages in Bulgaria from ERM West direct
 
 ## Entities Created
 
-- **Sensor**: Shows current outage status
+- **Status Sensor**: Shows current outage status
+- **Last Check Sensor**: Shows when last check was performed
+- **Next Check Sensor**: Shows when next check will occur
 - **Binary Sensor**: ON when outage detected (for automations)
+- **Custom Lovelace Card**: Beautiful card with instant check button
 
 ## Attributes
 
@@ -26,5 +29,21 @@ Both entities include:
 - `outage_type`: Type of outage (Планирана/Непланирана авария)
 - `last_check`: Last check timestamp
 - `details`: List of outage details
+
+## Custom Lovelace Card
+
+The integration includes a beautiful custom card:
+
+```yaml
+type: custom:bulgarian-utility-outage-card
+entity: binary_sensor.bulgarian_utility_outage_checker_xxx_outage
+title: Проверка за Аварии
+```
+
+Features:
+- 🎨 Automatic colors based on status
+- 🔘 Instant check button
+- ⏰ Shows last and next check time
+- 📝 Displays outage details
 
 Perfect for automations and notifications!
